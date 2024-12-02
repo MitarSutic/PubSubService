@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27016" // Change to "27017" for the second client
+#define DEFAULT_PORT "27016" // Server port
 #define SERVER_IP "127.0.0.1" // Replace with the server's IP address
 
 #pragma comment(lib, "Ws2_32.lib")
@@ -14,7 +14,7 @@ int main(void)
 {
     SOCKET connectSocket = INVALID_SOCKET;
     int iResult;
-    char sendbuf[DEFAULT_BUFLEN] = "Hello from the publisher!";
+    char sendbuf[DEFAULT_BUFLEN];
     char recvbuf[DEFAULT_BUFLEN];
     int recvbuflen = DEFAULT_BUFLEN;
 
@@ -65,9 +65,41 @@ int main(void)
 
     freeaddrinfo(result);
 
-    printf("Connected to server. Sending message...\n");
+    printf("Connected to server.\n");
 
-    // Send a message to the server
+    // Input values for kime, topic, and info
+    char kime[128];
+    char topic[128];
+    char info[128];
+
+    char pubsub[12];
+    printf("Welcome. Are you going to publish or subscribe?\n");
+    scanf_s("%s", pubsub,sizeof(pubsub));
+    if (strcmp("publish", pubsub) == 0)
+    {
+        getchar();
+        printf("Enter kime: ");
+        fgets(kime, sizeof(kime), stdin);
+        kime[strcspn(kime, "\n")] = '\0'; // Remove newline character
+
+        printf("Enter topic: ");
+        fgets(topic, sizeof(topic), stdin);
+        topic[strcspn(topic, "\n")] = '\0';
+
+        printf("Enter info: ");
+        fgets(info, sizeof(info), stdin);
+        info[strcspn(info, "\n")] = '\0';
+    }
+    else if (strcmp("subscribe", pubsub) == 0)
+    {
+        printf("Proslo\n");
+    }
+    // Format the message to send
+    snprintf(sendbuf, sizeof(sendbuf), "Kime: %s, Topic: %s, Info: %s", kime, topic, info);
+
+    printf("Sending message: %s\n", sendbuf);
+    printf("%s", sendbuf);
+    // Send the message to the server
     iResult = send(connectSocket, sendbuf, (int)strlen(sendbuf), 0);
     if (iResult == SOCKET_ERROR)
     {
@@ -79,7 +111,7 @@ int main(void)
 
     printf("Bytes sent: %d\n", iResult);
 
-    // Receive data from the server
+     //Receive data from the server
     iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
     if (iResult > 0)
     {

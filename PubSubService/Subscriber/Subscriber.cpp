@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27017" // Change to "27017" for the second client
+#define DEFAULT_PORT "27016" // Change to "27017" for the second client
 #define SERVER_IP "127.0.0.1" // Replace with the server's IP address
 
 #pragma comment(lib, "Ws2_32.lib")
