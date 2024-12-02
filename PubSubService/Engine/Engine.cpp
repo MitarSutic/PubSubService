@@ -115,6 +115,27 @@ int main(void)
     return 0;
 }
 
+//void subscribe(const char* topic, int subscriber_id) {
+//    // dodavanje nove pretplate
+//    if (subscription_count < max_topics) {
+//        subscriptions[subscription_count].topic = strdup(topic);
+//        subscriptions[subscription_count].subscriber_id = subscriber_id;
+//        subscription_count++;
+//        printf("subscriber %d successfully subscribed to topic '%s'.\n", subscriber_id, topic);
+//    }
+//    else {
+//        printf("error: maximum number of subscriptions reached.\n");
+//    }
+//}
+//
+//// funkcija za prikaz pretplata (za testiranje)
+//void printsubscriptions() {
+//    printf("current subscriptions:\n");
+//    for (int i = 0; i < subscription_count; i++) {
+//        printf("subscriber %d -> topic '%s'\n", subscriptions[i].subscriber_id, subscriptions[i].topic);
+//    }
+//}
+
 DWORD WINAPI ClientHandler(LPVOID clientSocket) {
     SOCKET socket = (SOCKET)clientSocket;
     char recvbuf[DEFAULT_BUFLEN];

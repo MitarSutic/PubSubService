@@ -1,4 +1,4 @@
-#include <winsock2.h>
+﻿#include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdio.h>
 
@@ -63,6 +63,7 @@ int main(void)
         return 1;
     }
 
+    
     freeaddrinfo(result);
 
     printf("Connected to server.\n");
@@ -93,6 +94,14 @@ int main(void)
     else if (strcmp("subscribe", pubsub) == 0)
     {
         printf("Proslo\n");
+        //printf("Enter topic to subscribe: ");
+        //scanf("%s", topic);
+
+        //int subscriber_id = 1; // Jednostavna simulacija ID-a
+        //Subscribe(topic, subscriber_id);
+
+        //// Prikaz trenutnih pretplata
+        //PrintSubscriptions();
     }
     // Format the message to send
     snprintf(sendbuf, sizeof(sendbuf), "Kime: %s, Topic: %s, Info: %s", kime, topic, info);
