@@ -1,4 +1,5 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Client.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Publisher.cpp
-C:\Faks\IKP\PubSubService\PubSubService\Client\Publisher.cpp(77,13): warning C4477: 'scanf_s' : format string '%s' requires an argument of type 'unsigned int', but variadic argument 2 has type 'size_t'
+C:\Faks\IKP\PubSubService\PubSubService\Client\Publisher.cpp(27,13): warning C4477: 'scanf_s' : format string '%s' requires an argument of type 'unsigned int', but variadic argument 2 has type 'size_t'
+C:\Faks\IKP\PubSubService\PubSubService\Client\Publisher.cpp(112,17): warning C4477: 'scanf_s' : format string '%s' requires an argument of type 'unsigned int', but variadic argument 2 has type 'size_t'
   Client.vcxproj -> C:\Faks\IKP\PubSubService\PubSubService\x64\Debug\Publisher.exe

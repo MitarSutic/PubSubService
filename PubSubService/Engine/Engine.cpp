@@ -122,40 +122,53 @@ DWORD WINAPI ClientHandler(LPVOID clientSocket) {
 
     // Receive data from the client
     do {
-        iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
+        iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0); // Leave space for null-terminator
         if (iResult > 0) {
             recvbuf[iResult] = '\0'; // Null-terminate the received string
             printf("Message received from client: %s\n", recvbuf);
 
-            // Parse the received message into Kime, Topic, and Info
-            char kime[DEFAULT_BUFLEN], topic[DEFAULT_BUFLEN], info[DEFAULT_BUFLEN];
+            // Parse the received message into Option, Kime, Topic, and Info
+            char option[DEFAULT_BUFLEN], kime[DEFAULT_BUFLEN], topic[DEFAULT_BUFLEN], info[DEFAULT_BUFLEN];
+            memset(option, 0, sizeof(option));  // Clear buffers
+            memset(kime, 0, sizeof(kime));
+            memset(topic, 0, sizeof(topic));
+            memset(info, 0, sizeof(info));
+            char* context = NULL;  // For maintaining state in strtok_s
+            char* token = NULL;
 
-            // Try parsing the input string using sscanf_s or strtok
-            if (sscanf_s(recvbuf, "Kime: %[^,], Topic: %[^,], Info: %s", kime, (unsigned)_countof(kime), topic, (unsigned)_countof(topic), info, (unsigned)_countof(info)) == 3) {
-                printf("Parsed message -> Kime: %s, Topic: %s, Info: %s\n", kime, topic, info);
+            // Tokenize the received message
+            token = strtok_s(recvbuf, "-", &context); // Split on `-`
+            while (token != NULL) {
+                // Remove leading spaces
+                while (*token == ' ') token++; // Trim leading spaces
 
-                // Create a PubSub object with the parsed data
-                PubSub newPubSub;
-                strcpy_s(newPubSub.topic, sizeof(newPubSub.topic), topic);
-                strcpy_s(newPubSub.info, sizeof(newPubSub.info), info);
-                newPubSub.accepted_socket = (int)socket; // You can use socket ID or another identifier
-
-                // Insert the PubSub object into the hashmap
-                if (insertPubSub(&map, kime, newPubSub)) {
-                    printf("PubSub object inserted into hashmap.\n");
-                    char response[DEFAULT_BUFLEN];
-                    snprintf(response, sizeof(response), "Approval: Data added successfully! Kime: %s, Topic: %s, Info: %s",
-                        kime, newPubSub.topic, newPubSub.info);
-
-                    send(newPubSub.accepted_socket, response, (int)strlen(response), 0);
-                    printf("Sent approval message with PubSub data to client.\n");
+                // Parse each part based on its prefix
+                if (strncmp(token, "Option:", 7) == 0) {
+                    strncpy_s(option, sizeof(option), token + 7, _TRUNCATE); // Copy after "Option:"
+                }
+                else if (strncmp(token, "Kime:", 5) == 0) {
+                    strncpy_s(kime, sizeof(kime), token + 5, _TRUNCATE); // Copy after "Kime:"
+                }
+                else if (strncmp(token, "Topic:", 6) == 0) {
+                    strncpy_s(topic, sizeof(topic), token + 6, _TRUNCATE); // Copy after "Topic:"
+                }
+                else if (strncmp(token, "Info:", 5) == 0) {
+                    strncpy_s(info, sizeof(info), token + 5, _TRUNCATE); // Copy after "Info:"
                 }
                 else {
-                    printf("Failed to insert PubSub object into hashmap.\n");
+                    printf("Unexpected token: %s\n", token); // Debug unexpected tokens
                 }
+
+                // Move to the next token
+                token = strtok_s(NULL, ",", &context);
+            }
+
+            // Validate if all required fields were parsed
+            if (strlen(option) > 0 && strlen(kime) > 0 && strlen(topic) > 0 && strlen(info) > 0) {
+                printf("Parsed message -> Option: %s, Kime: %s, Topic: %s, Info: %s\n", option, kime, topic, info);
             }
             else {
-                printf("Failed to parse message correctly.\n");
+                printf("Failed to parse message correctly. Ensure the format is: Option: value - Kime: value, Topic: value, Info: value\n");
             }
         }
         else if (iResult == 0) {
@@ -170,6 +183,7 @@ DWORD WINAPI ClientHandler(LPVOID clientSocket) {
     closesocket(socket);
     return 0;
 }
+
 bool InitializeWindowsSockets()
 {
     WSADATA wsaData;
